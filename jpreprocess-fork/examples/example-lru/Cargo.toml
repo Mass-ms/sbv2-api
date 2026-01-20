@@ -1,0 +1,21 @@
+[package]
+name = "example-lru"
+edition = "2021"
+
+version.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+jpreprocess.workspace = true
+jpreprocess-core.workspace = true
+jpreprocess-dictionary.workspace = true
+
+lindera.workspace = true
+lindera-dictionary.workspace = true
+
+lru = "0.12.2"

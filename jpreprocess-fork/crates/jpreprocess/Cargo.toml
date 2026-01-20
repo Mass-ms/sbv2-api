@@ -1,0 +1,38 @@
+[package]
+name = "jpreprocess"
+edition = "2021"
+
+version.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+documentation = "https://docs.rs/jpreprocess"
+
+[features]
+naist-jdic = ["dep:jpreprocess-naist-jdic", "jpreprocess-naist-jdic/naist-jdic"]
+binary = ["dep:clap", "dep:serde_json"]
+
+[[bin]]
+name = "jpreprocess"
+required-features = ["binary"]
+
+[dependencies]
+lindera.workspace = true
+lindera-dictionary.workspace = true
+
+phf = { workspace = true, features = ["macros"] }
+
+jlabel.workspace = true
+jpreprocess-core.workspace = true
+jpreprocess-njd.workspace = true
+jpreprocess-jpcommon.workspace = true
+jpreprocess-dictionary.workspace = true
+
+jpreprocess-naist-jdic = { workspace = true, optional = true }
+
+clap = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }

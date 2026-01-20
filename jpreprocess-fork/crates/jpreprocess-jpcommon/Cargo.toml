@@ -1,0 +1,18 @@
+[package]
+name = "jpreprocess-jpcommon"
+edition = "2021"
+
+version.workspace = true
+description.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+documentation = "https://docs.rs/jpreprocess-jpcommon"
+
+[dependencies]
+jlabel.workspace = true
+jpreprocess-core.workspace = true
+jpreprocess-njd.workspace = true

@@ -223,7 +223,30 @@ impl JTalk {
     }
 
     pub fn num2word(&self, text: &str) -> Result<String> {
-        let mut parsed = self.jpreprocess.text_to_njd(text)?;
+        let mut parsed = self.jpreprocess.text_to_njd(text).map_err(|e| {
+            eprintln!("[JTalk] num2word error: {:?}", e);
+            eprintln!("[JTalk] num2word error for text: {:?}", text);
+            // 二分探索で問題箇所を特定
+            let chars: Vec<char> = text.chars().collect();
+            if chars.len() > 1 {
+                let mut left = 0;
+                let mut right = chars.len();
+                while right - left > 1 {
+                    let mid = (left + right) / 2;
+                    let partial: String = chars[..mid].iter().collect();
+                    if self.jpreprocess.text_to_njd(&partial).is_ok() {
+                        left = mid;
+                    } else {
+                        right = mid;
+                    }
+                }
+                let start = left.saturating_sub(5);
+                let end = chars.len().min(left + 10);
+                let context: String = chars[start..end].iter().collect();
+                eprintln!("[JTalk] error around position {}: ...{}...", left, context);
+            }
+            e
+        })?;
         parsed.preprocess();
         let texts: Vec<String> = parsed
             .nodes
@@ -234,7 +257,10 @@ impl JTalk {
     }
 
     pub fn process_text(&self, text: &str) -> Result<JTalkProcess> {
-        let parsed = self.jpreprocess.run_frontend(text)?;
+        let parsed = self.jpreprocess.run_frontend(text).map_err(|e| {
+            eprintln!("[JTalk] process_text error for text: {:?}", text);
+            e
+        })?;
         let jtalk_process = JTalkProcess::new(Arc::clone(&self.jpreprocess), parsed);
         Ok(jtalk_process)
     }
