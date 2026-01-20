@@ -83,6 +83,10 @@ impl CForm {
 impl FromStr for CForm {
     type Err = JPreprocessError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // 空文字列や制御文字の場合はデフォルト値を返す
+        if s.is_empty() || s.chars().any(|c| c.is_control()) {
+            return Ok(Self::None);
+        }
         match s {
             "ガル接続" => Ok(Self::ConjunctionGaru),
             "音便基本形" => Ok(Self::BasicEuphony),

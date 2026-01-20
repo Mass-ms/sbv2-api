@@ -103,6 +103,10 @@ pub enum CType {
 impl FromStr for CType {
     type Err = CTypeParseError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        // 空文字列や制御文字の場合はデフォルト値を返す
+        if s.is_empty() || s.chars().any(|c| c.is_control()) {
+            return Ok(Self::None);
+        }
         let (major, minor) = s.split_once('・').unwrap_or((s, ""));
         match major {
             "カ変" => Ok(Self::KaIrregular(KaIrregular::from_str(minor)?)),
