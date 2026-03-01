@@ -5,10 +5,26 @@ use std::io::copy;
 use std::path::PathBuf;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let static_dir = home_dir().unwrap().join(".cache/sbv2");
-    let static_path = static_dir.join("all.bin");
     let out_path = PathBuf::from(&env::var("OUT_DIR").unwrap()).join("all.bin");
     println!("cargo:rerun-if-changed=build.rs");
+
+    // First, check for locally built dictionary from make_dict.sh
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
+    let local_dict_path = manifest_dir.join("src/dic/all.dic");
+
+    if local_dict_path.exists() {
+        println!("cargo:warning=Using locally built dictionary from AivisSpeech");
+        if !out_path.exists() && fs::hard_link(&local_dict_path, &out_path).is_err() {
+            println!("cargo:warning=Failed to create hard link, copying instead.");
+            fs::copy(&local_dict_path, &out_path)?;
+        }
+        return Ok(());
+    }
+
+    // Fall back to cached or downloaded dictionary
+    let static_dir = home_dir().unwrap().join(".cache/sbv2");
+    let static_path = static_dir.join("all.bin");
+
     if static_path.exists() {
         println!("cargo:info=Dictionary file already exists, skipping download.");
     } else {
